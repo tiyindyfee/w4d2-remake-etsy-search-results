@@ -15,6 +15,10 @@
 </div>
 */
 
+// Events
+document.getElementById('search').addEventListener('keypress', searchEnter)
+document.getElementById('searchBtn').addEventListener('click', search)
+
 function createResultCard(item) {
     var col = document.createElement('div')
     col.className = 'col-sm-3'
@@ -24,7 +28,7 @@ function createResultCard(item) {
     col.appendChild(card)
 
     var img = document.createElement('img')
-    img.setAttribute('src', item.image)
+    img.setAttribute('src', item.Images[0].url_170x135)
     card.appendChild(img)
 
     var span = document.createElement('span')
@@ -37,7 +41,7 @@ function createResultCard(item) {
 
     var colLeft = document.createElement('div')
     colLeft.className = 'col-xs-6 text-muted'
-    colLeft.innerHTML = item.seller
+    colLeft.innerHTML = item.Shop.shop_name
     row.appendChild(colLeft)
 
     var colRight = document.createElement('div')
@@ -48,94 +52,38 @@ function createResultCard(item) {
     document.querySelector('#searchResults').appendChild(col)
 }
 
-function makeRandomAmount() {
-    return '$' + Math.round(Math.random() * 100) + '.00'
-}
-
-var items = [
-    {
-        title: 'A title of a product',
-        image: 'http://unsplash.it/200?image=',
-        seller: 'sellername',
-        price: makeRandomAmount()
-    },
-    {
-        title: 'A title of a product',
-        image: 'http://unsplash.it/200?image=',
-        seller: 'sellername',
-        price: makeRandomAmount()
-    },
-    {
-        title: 'A title of a product',
-        image: 'http://unsplash.it/200?image=',
-        seller: 'sellername',
-        price: makeRandomAmount()
-    },
-    {
-        title: 'A title of a product',
-        image: 'http://unsplash.it/200?image=',
-        seller: 'sellername',
-        price: makeRandomAmount()
-    },
-    {
-        title: 'A title of a product',
-        image: 'http://unsplash.it/200?image=',
-        seller: 'sellername',
-        price: makeRandomAmount()
-    },
-    {
-        title: 'A title of a product',
-        image: 'http://unsplash.it/200?image=',
-        seller: 'sellername',
-        price: makeRandomAmount()
-    },
-    {
-        title: 'A title of a product',
-        image: 'http://unsplash.it/200?image=',
-        seller: 'sellername',
-        price: makeRandomAmount()
-    },
-    {
-        title: 'A title of a product',
-        image: 'http://unsplash.it/200?image=',
-        seller: 'sellername',
-        price: makeRandomAmount()
-    },
-    {
-        title: 'A title of a product',
-        image: 'http://unsplash.it/200?image=',
-        seller: 'sellername',
-        price: makeRandomAmount()
-    },
-    {
-        title: 'A title of a product',
-        image: 'http://unsplash.it/200?image=',
-        seller: 'sellername',
-        price: makeRandomAmount()
-    },
-    {
-        title: 'A title of a product',
-        image: 'http://unsplash.it/200?image=',
-        seller: 'sellername',
-        price: makeRandomAmount()
-    },
-    {
-        title: 'A title of a product',
-        image: 'http://unsplash.it/200?image=',
-        seller: 'sellername',
-        price: makeRandomAmount()
-    },
-]
-
-//console.log(items)
-
 function makeCards(cardItems) {
     document.querySelector('#searchResults').innerHTML = ''
 
     cardItems.forEach(function(item, i) {
-        // item.title += i
-        // item.image += i
-        // item.seller += i
         createResultCard(item)
     })
 }
+
+function search() {
+    // get search term from search input box
+    var searchTerm = document.getElementById('search').value
+
+    // clear search input field
+    document.getElementById('search').value = ''
+
+    // set a default search term if input was empty
+    if (searchTerm === '') {
+        searchTerm = 'vintage comic books'
+    }
+
+    // get the api data
+    fetch('https://thinksaydo.com/tiyproxy.php?url=' + encodeURIComponent('https://openapi.etsy.com/v2/listings/active?api_key=h9oq2yf3twf4ziejn10b717i&keywords=' + encodeURIComponent(searchTerm) + '&includes=Images,Shop'))
+        .then(response => response.json())
+        .then(data => makeCards(data.results))
+}
+
+function searchEnter(event) {
+    // console.log(event)
+    if (event.key === 'Enter') {
+        search()
+    }
+}
+
+// Display initial results
+search()
